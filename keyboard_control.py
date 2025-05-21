@@ -2,19 +2,20 @@ import curses
 from adafruit_motorkit import MotorKit
 
 kit = MotorKit()
-SPEED = 0.4
+SPEED = 0.5
+
 def stop():
     for m in [kit.motor1, kit.motor2, kit.motor3, kit.motor4]:
         m.throttle = 0
 
 def move_forward():
-    kit.motor1.throttle = -SPEED
+    kit.motor1.throttle = SPEED
     kit.motor2.throttle = SPEED
     kit.motor3.throttle = SPEED
     kit.motor4.throttle = SPEED
 
 def move_backward():
-    kit.motor1.throttle = SPEED
+    kit.motor1.throttle = -SPEED
     kit.motor2.throttle = -SPEED
     kit.motor3.throttle = -SPEED
     kit.motor4.throttle = -SPEED
@@ -22,61 +23,60 @@ def move_backward():
 def turn_left():
     kit.motor1.throttle = SPEED
     kit.motor2.throttle = SPEED
-    kit.motor3.throttle = SPEED
-    kit.motor4.throttle = SPEED
+    kit.motor3.throttle = -SPEED
+    kit.motor4.throttle = -SPEED
 
 def turn_right():
     kit.motor1.throttle = -SPEED
     kit.motor2.throttle = -SPEED
-    kit.motor3.throttle = -SPEED
-    kit.motor4.throttle = -SPEED
+    kit.motor3.throttle = SPEED
+    kit.motor4.throttle = SPEED
 
 def strafe_left():
     kit.motor1.throttle = SPEED
-    kit.motor2.throttle = SPEED
+    kit.motor2.throttle = -SPEED
     kit.motor3.throttle = -SPEED
-    kit.motor4.throttle = -SPEED
+    kit.motor4.throttle = SPEED
 
 def strafe_right():
     kit.motor1.throttle = -SPEED
-    kit.motor2.throttle = -SPEED
+    kit.motor2.throttle = SPEED
+    kit.motor3.throttle = SPEED
+    kit.motor4.throttle = -SPEED
+
+def forward_left():
+    kit.motor1.throttle = SPEED
+    kit.motor2.throttle = SPEED
     kit.motor3.throttle = SPEED
     kit.motor4.throttle = SPEED
 
-def forward_left():
-    kit.motor1.throttle = 0
+def forward_right():
+    kit.motor1.throttle = SPEED
     kit.motor2.throttle = SPEED
     kit.motor3.throttle = SPEED
-    kit.motor4.throttle = 0
-
-def forward_right():
-    kit.motor1.throttle = -SPEED
-    kit.motor2.throttle = 0
-    kit.motor3.throttle = 0
     kit.motor4.throttle = SPEED
 
 def backward_left():
-    kit.motor1.throttle = SPEED
-    kit.motor2.throttle = 0
-    kit.motor3.throttle = 0
+    kit.motor1.throttle = -SPEED
+    kit.motor2.throttle = -SPEED
+    kit.motor3.throttle = -SPEED
     kit.motor4.throttle = -SPEED
 
 def backward_right():
-    kit.motor1.throttle = 0
+    kit.motor1.throttle = -SPEED
     kit.motor2.throttle = -SPEED
     kit.motor3.throttle = -SPEED
-    kit.motor4.throttle = 0
+    kit.motor4.throttle = -SPEED
 
 def main(stdscr):
     stdscr.nodelay(True)
     stdscr.clear()
-    stdscr.addstr("WASD to move, Q/E strafe, diagonal = W+A etc., X to quit\n")
+    stdscr.addstr("WASD to move, Q/E to strafe, diagonals = WA/WD/etc., X to quit\n")
     stdscr.refresh()
 
     while True:
         key1 = stdscr.getch()
         key2 = stdscr.getch()
-
         keys = {key1, key2}
 
         if ord('x') in keys:
