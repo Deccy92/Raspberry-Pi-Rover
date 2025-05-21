@@ -1,20 +1,34 @@
-from picamera2 import Picamera2
-from libcamera import Transform
-import io
-from PIL import Image
+import subprocess
 
 class VideoCamera:
     def __init__(self):
-        self.picam2 = Picamera2()
-        self.picam2.configure(self.picam2.create_video_configuration(
-            main={"format": "RGB888", "size": (640, 480)},
-            transform=Transform(hflip=1)
-        ))
-        self.picam2.start()
+        self.process = subprocess.Popen(
+            [
+                "rpicam-vid",
+                "-t", "0",  # Run indefinitely
+                "--post-process-file", "/usr/share/rpi-camera-assets/imx500_mobilenet_ssd.json",
+                "--codec", "mjpeg",
+                "-o", "-"
+            ],
+            stdout=subprocess.PIPE
+        )
+        self.buffer = b""
 
     def get_frame(self):
-        frame = self.picam2.capture_array()
-        img = Image.fromarray(frame)
-        buffer = io.BytesIO()
-        img.save(buffer, format='JPEG')
-        return buffer.getvalue()
+        # Collect data until a full JPEG frame is found
+        while True:
+            chunk = self.process.stdout.read(1024)
+            if not chunk:
+                break
+            self.buffer += chunk
+            start = self.buffer.find(b'\xff\xd8')  # JPEG start
+            end = self.buffer.find(b'\xff\xd9')    # JPEG end
+            if start != -1 and end != -1 and end > start:
+                frame = self.buffer[start:end+2]
+                self.buffer = self.buffer[end+2:]  # Trim processed frame
+                return frame
+        return None
+
+    def __del__(self):
+        if self.process:
+            self.process.terminate()
