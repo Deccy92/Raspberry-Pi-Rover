@@ -8,7 +8,7 @@ can then build on.
 
 __name__ is a special Python variable that tells Flask which module is running. Flask, by design, then uses that to determine the
 root path of the project. Flask, again by design, assumes that all the other necessary modules for the project will be in this root
-fold and will begin searching for them. By default, Flask will search for a folder called templates and use it to load HTML files.
+folder and will begin searching for them. By default, Flask will search for a folder called templates and use it to load HTML files.
 
 @app.route('/') is a route 'decorator' that tells Flask to run the function index(). The index function then returns render_template('index.html'),
 which tells Flask to serve the file templates/index.html.
