@@ -91,12 +91,16 @@ def main(stdscr): #stdscr is 'standard screen'. So it's creating something outsi
     From here, we have the main-loop of the keyboard control logic. The while True loops allows continuous, real-time input handling.
     Each motor control function is assigned to a specific key on the keyboard (W,A,S,D,Q,E,X, Spacebar).
 
+    getch() captures a single character entered by the user without having to press enter. It returns the ASCII integer of the key pressed.
     """
     while True:
-            key1 = stdscr.getch() #These 3 lines of code allowed the user to enter 2 key presses to allow
-            key2 = stdscr.getch() #combos such as W + Q for diagonal movement. I eventually removed the
-            keys = {key1, key2}   #diagonal movement from the if-else branches because they caused jittery
+            key1 = stdscr.getch()
+            key2 = stdscr.getch()
+            keys = {key1, key2}   #This line of code allowed the user to enter 2 key presses to allow
+                                  #combos such as W + Q for diagonal movement. I eventually removed the
+                                  #diagonal movement from the if-else branches because they caused jittery
                                   #movement, however this structure remains for future use or expansion.
+
 
             if ord(' ') in keys:
                 stop()
@@ -115,7 +119,24 @@ def main(stdscr): #stdscr is 'standard screen'. So it's creating something outsi
             elif ord('e') in keys:
                 strafe_right()
             elif -1 not in keys:
-                stop()
+                stop() #In curses, getch() returns -1 when no key is pressed. This final conditional branch
+                       #checks if the user pressed a key that wasn't mapped to a robot movement. If none of the
+                       #above conditions match, and neither key is -1 (meaning at least one key was pressed),
+                       #then the robot stops. This helps prevent unintended movement if an unrecognized key is used.
+
+
+
+    """
+    The above if-elif conditional branches uses the ord() function to check if a particular key has been pressed and executes a
+    a function if True. Ord() converts a character to it's ASCII integer value. So, for example, if the user enters 'w', the
+    getch() function above will take that input and convert it to it's ASCII value (119). Then, the ord() function in the conditonal
+    branches below will convert 'w' to it's ASCII value. When it detects that the ASCII value obtained by getch() matches the ASCII value
+    obtained from 'w', it will execute the move_forward() function.
+
+    """
+
+
+
 
 curses.wrapper(main) #This is analagous to .mainloop() in Tkinter. It runs the curses terminal(interface) and executes the main(stdscr)
                      #function inside it. The .wrapper() method handles all the setup and cleanup for the curses terminal.
